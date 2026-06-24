@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - QueueManager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-dark: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 16px;
+        }
+
+        body {
+            background: #f8f9fa;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--dark);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card {
+            background: var(--gradient);
+            color: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+
+        .stat-card.success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .stat-card.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .stat-card.info { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+        .stat-card.danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+
+        .btn-primary {
+            background: var(--gradient);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+
+        .queue-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .queue-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-waiting { background: #fef3c7; color: #92400e; }
+        .status-serving { background: #dbeafe; color: #1e40af; }
+        .status-completed { background: #d1fae5; color: #065f46; }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: #6c757d;
+            font-weight: 500;
+            padding: 1rem 1.5rem;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            background: transparent;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .admin-welcome {
+            background: var(--gradient);
+            color: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--gradient) !important;">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="fas fa-people-queue me-2"></i>QueueManager - Admin
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3 text-white-50" id="adminWelcome"></span>
+                <span class="navbar-text me-3 text-white-50 small" id="adminEmail"></span>
+                <a class="nav-link text-white" href="#" onclick="adminLogout()">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading Admin Dashboard...</p>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardContent" style="display: none;">
+            <!-- Welcome Section -->
+            <div class="admin-welcome fade-in-up">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="fw-bold mb-2">Admin Dashboard</h3>
+                        <p class="mb-0 opacity-90">Manage queues and monitor system performance</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="glass-card d-inline-block p-3">
+                            <small class="text-muted">Last Updated</small>
+                            <div class="fw-bold" id="lastUpdated">Just now</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="row mb-4 fade-in-up" style="animation-delay: 0.2s;">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card glass-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 id="waitingCount" class="fw-bold display-6 mb-1">0</h2>
+                                <p class="mb-0 opacity-90">Waiting</p>
+                            </div>
+                            <i class="fas fa-clock fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card info glass-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 id="servingCount" class="fw-bold display-6 mb-1">0</h2>
+                                <p class="mb-0 opacity-90">Serving</p>
+                            </div>
+                            <i class="fas fa-user-check fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card success glass-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 id="completedCount" class="fw-bold display-6 mb-1">0</h2>
+                                <p class="mb-0 opacity-90">Completed</p>
+                            </div>
+                            <i class="fas fa-check-circle fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card danger glass-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 id="noShowCount" class="fw-bold display-6 mb-1">0</h2>
+                                <p class="mb-0 opacity-90">No Shows</p>
+                            </div>
+                            <i class="fas fa-times-circle fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row fade-in-up" style="animation-delay: 0.4s;">
+                <!-- Queue Management -->
+                <div class="col-md-6">
+                    <div class="glass-card mb-4">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-tasks me-2"></i>Queue Management
+                            </h5>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Select Location</label>
+                                <select class="form-select" id="locationSelect" onchange="loadLocationQueues()">
+                                    <option value="">Loading locations...</option>
+                                </select>
+                            </div>
+                            
+                            <div id="currentQueueSection" style="display: none;">
+                                <h6 class="fw-semibold mb-3">Current Queue</h6>
+                                <div id="currentQueueInfo" class="alert alert-info"></div>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-success" onclick="callNext()">
+                                        <i class="fas fa-bullhorn me-2"></i>Call Next
+                                    </button>
+                                    <button class="btn btn-warning" onclick="markNoShow()">
+                                        <i class="fas fa-user-times me-2"></i>Mark as No-Show
+                                    </button>
+                                    <button class="btn btn-primary" onclick="completeCurrent()">
+                                        <i class="fas fa-check me-2"></i>Complete Current
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="waitingList" class="mt-4">
+                                <h6 class="fw-semibold mb-3">Waiting List</h6>
+                                <div id="waitingTicketsList" style="max-height: 400px; overflow-y: auto;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics -->
+                <div class="col-md-6">
+                    <div class="glass-card">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-chart-bar me-2"></i>Analytics
+                            </h5>
+                            <ul class="nav nav-tabs" id="analyticsTabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#ticketsChartTab">Tickets per Day</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#waitTimeChartTab">Average Wait Time</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#statusChartTab">Status Distribution</a>
+                                </li>
+                            </ul>
+                            
+                            <div class="tab-content mt-3">
+                                <div class="tab-pane fade show active" id="ticketsChartTab">
+                                    <canvas id="ticketsChart" height="250"></canvas>
+                                </div>
+                                <div class="tab-pane fade" id="waitTimeChartTab">
+                                    <canvas id="waitTimeChart" height="250"></canvas>
+                                </div>
+                                <div class="tab-pane fade" id="statusChartTab">
+                                    <canvas id="statusChart" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
