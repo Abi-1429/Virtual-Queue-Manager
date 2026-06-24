@@ -9,6 +9,7 @@ A full-stack web application that revolutionizes waiting in line by allowing use
 
 ## 🌟 Live Demo
 **🌐 Main Application:** https://virtual-queue-manager.netlify.app/ 
+
 **🔧 Admin Dashboard:** https://virtual-queue-manager.netlify.app/admin-login.html
 
 
