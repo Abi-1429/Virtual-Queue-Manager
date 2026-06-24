@@ -99,22 +99,6 @@ or launch using **VS Code Live Server**.
 
 ---
 
-# 📸 Preview
-
-<div align="center">
-
-### Home Page
-
-<img width="800" src="https://via.placeholder.com/800x400.png?text=Home+Page">
-
-### Dashboard
-
-<img width="800" src="https://via.placeholder.com/800x400.png?text=Dashboard">
-
-</div>
-
----
-
 # 🎯 Applications
 
 🏥 Hospital Appointment Management
