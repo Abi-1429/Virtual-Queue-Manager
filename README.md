@@ -8,10 +8,9 @@ A full-stack web application that revolutionizes waiting in line by allowing use
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
 ## 🌟 Live Demo
-**🌐 Main Application:** [https://your-project.web.app](https://your-project.web.app)  
-**🔧 Admin Dashboard:** [https://your-project.web.app/admin-login.html](https://your-project.web.app/admin-login.html)
+**🌐 Main Application:** https://virtual-queue-manager.netlify.app/ 
+**🔧 Admin Dashboard:** https://virtual-queue-manager.netlify.app/admin-login.html
 
-*Note: Replace with your actual deployment URL after hosting*
 
 ## 📖 Table of Contents
 - [Features](#-features)
